@@ -14,6 +14,7 @@ export interface ProgmaServerOptions {
   targetPort: number
   projectRoot: string
   clientScript?: string
+  onReady?: (port: number) => void
 }
 
 export class ProgmaServer {
@@ -229,7 +230,7 @@ export class ProgmaServer {
       throw err
     })
     this.httpServer.listen(this.opts.port, () => {
-      console.log(`[Progma] Proxy running at http://localhost:${this.opts.port}`)
+      this.opts.onReady?.(this.opts.port)
     })
   }
 

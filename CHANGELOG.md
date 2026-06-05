@@ -15,6 +15,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Packaging** — `progma` npm package: single self-contained binary; server, client overlay, and all workspace deps bundled into `dist/cli.js` via tsup (CJS format for full Node.js compatibility); client IIFE inlined at build time via esbuild plugin; no sub-packages published
 - `LICENSE` (MIT)
 
+### Changed
+
+- **UX** — startup output simplified: single `✦ Progma running at http://localhost:<port>` message printed once the proxy is actually bound; internal port and intermediate logs removed
+
 ### Fixed
 
 - **Correctness** — `server.ts`: `res.end(clientScript)` corrected to `res.end(this.clientScript)`; bare identifier was unresolvable and would have thrown `ReferenceError` on every `/__progma/client.js` request, preventing the overlay from ever loading

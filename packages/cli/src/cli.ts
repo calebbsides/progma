@@ -63,8 +63,7 @@ async function main() {
   const targetPort = await findFreePort(14321)
   const projectRoot = process.cwd()
 
-  console.log(`[Progma] Starting dev server: ${devCmd.join(' ')}`)
-  console.log(`[Progma] Internal port: ${targetPort}`)
+  console.log(`[Progma] Starting ${devCmd.join(' ')}...`)
 
   // Resolve the binary from the project's node_modules/.bin so it works
   // without the binary being on PATH (common in monorepos / Windows)
@@ -95,12 +94,12 @@ async function main() {
     targetPort,
     projectRoot,
     clientScript,
+    onReady: (port) => {
+      console.log(`\n  ✦  Progma running at http://localhost:${port}\n`)
+    },
   })
 
   server.listen()
-
-  console.log(`\n  ✦  Progma  →  http://localhost:${progmaPort}`)
-  console.log(`     Proxying →  http://localhost:${targetPort}\n`)
 
   process.on('SIGINT', () => {
     server.close()
