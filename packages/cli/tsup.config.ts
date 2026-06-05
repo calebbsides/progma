@@ -9,7 +9,7 @@ const clientBundle = readFileSync(
 
 export default defineConfig({
   entry: ['src/cli.ts'],
-  format: ['esm'],
+  format: ['cjs'],
   platform: 'node',
   target: 'node18',
   bundle: true,

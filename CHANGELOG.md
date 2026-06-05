@@ -12,7 +12,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- **Packaging** — `progma` npm package: single self-contained binary; server, client overlay, and all workspace deps bundled into `dist/cli.js` via tsup; client IIFE inlined at build time; no sub-packages published
+- **Packaging** — `progma` npm package: single self-contained binary; server, client overlay, and all workspace deps bundled into `dist/cli.js` via tsup (CJS format for full Node.js compatibility); client IIFE inlined at build time via esbuild plugin; no sub-packages published
 - `LICENSE` (MIT)
 
 ### Fixed

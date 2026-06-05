@@ -2,19 +2,26 @@
   "name": "progma",
   "version": "0.0.2",
   "description": "AI-powered dev overlay — wrap any dev server with a chat panel and annotation tools",
-  "keywords": ["ai", "developer-tools", "overlay", "proxy", "annotations", "vite", "nextjs"],
+  "keywords": [
+    "ai",
+    "developer-tools",
+    "overlay",
+    "proxy",
+    "annotations",
+    "vite",
+    "nextjs"
+  ],
   "homepage": "https://github.com/calebbsides/progma#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/calebbsides/progma.git"
+    "url": "git+https://github.com/calebbsides/progma.git"
   },
   "license": "MIT",
-  "type": "module",
   "files": [
     "dist"
   ],
   "bin": {
-    "progma": "./dist/cli.js"
+    "progma": "dist/cli.js"
   },
   "scripts": {
     "build": "tsup",
