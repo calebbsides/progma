@@ -185,13 +185,13 @@ function init() {
         const { reply, applied } = msg.payload as { reply: string; applied?: boolean }
         addMessage('ai', reply)
         if (applied) {
-          addSystemMessage('Change applied to disk — waiting for HMR…')
+          addPendingHmrMessage()
         }
         break
       }
 
       case 'ai:patch:applied':
-        addSystemMessage('Change applied — waiting for HMR…')
+        addPendingHmrMessage()
         break
 
       case 'error': {
@@ -218,6 +218,32 @@ function init() {
     el.textContent = text
     messages.appendChild(el)
     messages.scrollTop = messages.scrollHeight
+  }
+
+  function addPendingHmrMessage() {
+    const el = document.createElement('div')
+    el.className = 'progma-msg system'
+    el.textContent = 'Change applied — waiting for HMR…'
+    messages.appendChild(el)
+    messages.scrollTop = messages.scrollHeight
+
+    // Vite fires this custom event after each hot update
+    const onUpdate = () => {
+      el.textContent = '✓ Updated'
+      cleanup()
+    }
+    // Fallback: if HMR doesn't fire within 5s, resolve anyway
+    const timer = setTimeout(() => {
+      el.textContent = '✓ Applied'
+      cleanup()
+    }, 5000)
+
+    function cleanup() {
+      clearTimeout(timer)
+      window.removeEventListener('vite:afterUpdate', onUpdate)
+    }
+
+    window.addEventListener('vite:afterUpdate', onUpdate, { once: true })
   }
 
   function renderPins() {

@@ -18,6 +18,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - **UX** — startup output simplified: single `✦ Progma running at http://localhost:<port>` message printed once the proxy is actually bound; internal port and intermediate logs removed
+- **UX** — "waiting for HMR…" message now resolves to "✓ Updated" once Vite fires `vite:afterUpdate`, with a 5s fallback to "✓ Applied" for non-Vite dev servers
 
 ### Fixed
 
