@@ -4,4 +4,4 @@ Progma sits between the developer and their existing dev server as a transparent
 
 **CRITICAL NOTE** All code changes should have a create update or delete workflow attached to them
 
-**CRITICAL NOTE** Before creating a code commit a /code-review job should be submitted and an update should be made to the CHANGELOG outlining the changes that were made
+**CRITICAL NOTE** Before creating a code commit a /code-review job should be submitted and any issues found should be resolved, an update should be made to the CHANGELOG outlining the changes that were made

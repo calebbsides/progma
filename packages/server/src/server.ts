@@ -1,5 +1,4 @@
 import http from 'node:http'
-import fs from 'node:fs'
 import httpProxy from 'http-proxy'
 import { WebSocketServer, WebSocket } from 'ws'
 import type { ProgmaMessage, AnnotationSavePayload, AiChatPayload } from '@progma/core'
@@ -8,14 +7,13 @@ import { FileIndex } from './file-index.js'
 import { runAiChat } from './ai.js'
 import { applyDiff } from './patcher.js'
 
-const CLIENT_SCRIPT_PLACEHOLDER = '<!-- __PROGMA_CLIENT__ -->'
 const INJECT_SNIPPET = `<script src="/__progma/client.js"></script>`
 
 export interface ProgmaServerOptions {
   port: number
   targetPort: number
   projectRoot: string
-  clientBundlePath?: string
+  clientScript?: string
 }
 
 export class ProgmaServer {
@@ -25,26 +23,17 @@ export class ProgmaServer {
   private annotations: AnnotationStore
   private fileIndex: FileIndex
   private clients: Set<WebSocket> = new Set()
-  private clientScript: string = ''
+  private clientScript: string
 
   constructor(private opts: ProgmaServerOptions) {
+    this.clientScript = opts.clientScript ?? `console.warn('[Progma] client bundle not available')`
     this.annotations = new AnnotationStore(opts.projectRoot)
     this.fileIndex = new FileIndex(opts.projectRoot)
     this.proxy = httpProxy.createProxyServer({ ws: true })
     this.httpServer = http.createServer(this.handleRequest.bind(this))
     this.wss = new WebSocketServer({ noServer: true })
-    this.loadClientScript()
     this.setupProxy()
     this.setupWebSocket()
-  }
-
-  private loadClientScript() {
-    const clientPath = this.opts.clientBundlePath
-    if (clientPath && fs.existsSync(clientPath)) {
-      this.clientScript = fs.readFileSync(clientPath, 'utf8')
-    } else {
-      this.clientScript = `console.log('[Progma] client bundle not built yet')`
-    }
   }
 
   private setupProxy() {

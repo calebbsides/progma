@@ -1,15 +1,12 @@
 import { spawn } from 'node:child_process'
 import net from 'node:net'
 import path from 'node:path'
-import fs from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import { config as loadEnv } from 'dotenv'
 import { ProgmaServer } from '@progma/server'
+import clientScript from 'virtual:client-bundle'
 
 // Load .env from the directory where `progma dev` is run
 loadEnv({ path: path.join(process.cwd(), '.env') })
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function waitForPort(port: number, retries = 60, delay = 500): Promise<void> {
   for (let i = 0; i < retries; i++) {
@@ -46,19 +43,6 @@ function parseArgs(argv: string[]): { progmaPort: number; devCmd: string[] } {
   return { progmaPort, devCmd }
 }
 
-function findClientBundle(): string | null {
-  // When running from dist/, the client bundle is in sibling packages
-  const candidates = [
-    // Installed in node_modules (published package layout)
-    path.join(__dirname, '..', 'node_modules', '@progma', 'client', 'dist', 'client.js'),
-    // Monorepo: dist/cli.js → ../../client/dist/client.js
-    path.join(__dirname, '..', '..', 'client', 'dist', 'client.js'),
-    // Monorepo via packages/
-    path.join(__dirname, '..', '..', '..', 'client', 'dist', 'client.js'),
-  ]
-  return candidates.find((p) => fs.existsSync(p)) ?? null
-}
-
 async function main() {
   const argv = process.argv.slice(2)
 
@@ -78,12 +62,6 @@ async function main() {
 
   const targetPort = await findFreePort(14321)
   const projectRoot = process.cwd()
-
-  const clientBundle = findClientBundle()
-  if (!clientBundle) {
-    console.warn('[Progma] Warning: client bundle not found — UI will not be injected.')
-    console.warn('         Run `pnpm build` in packages/client first.')
-  }
 
   console.log(`[Progma] Starting dev server: ${devCmd.join(' ')}`)
   console.log(`[Progma] Internal port: ${targetPort}`)
@@ -116,7 +94,7 @@ async function main() {
     port: progmaPort,
     targetPort,
     projectRoot,
-    clientBundlePath: clientBundle ?? undefined,
+    clientScript,
   })
 
   server.listen()

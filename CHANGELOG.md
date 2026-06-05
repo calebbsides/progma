@@ -10,8 +10,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.0.2] — 2026-06-05
 
+### Added
+
+- **Packaging** — `progma` npm package: single self-contained binary; server, client overlay, and all workspace deps bundled into `dist/cli.js` via tsup; client IIFE inlined at build time; no sub-packages published
+- `LICENSE` (MIT)
+
 ### Fixed
 
+- **Correctness** — `server.ts`: `res.end(clientScript)` corrected to `res.end(this.clientScript)`; bare identifier was unresolvable and would have thrown `ReferenceError` on every `/__progma/client.js` request, preventing the overlay from ever loading
 - **Security** — `FileIndex.readFile`/`writeFile`: added path-traversal guard; paths resolving outside `projectRoot` are now rejected
 - **Security** — `client/index.ts`: `dataProgmaId` is now escaped before use in `querySelector` to prevent CSS selector injection
 - **Correctness** — `server.ts`: `proxyAndInject` now sets `accept-encoding: identity` on upstream requests and strips `content-encoding` from responses, preventing garbled output when upstream uses gzip

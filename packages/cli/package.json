@@ -1,8 +1,18 @@
 {
-  "name": "@progma/cli",
-  "version": "0.0.1",
-  "private": true,
+  "name": "progma",
+  "version": "0.0.2",
+  "description": "AI-powered dev overlay — wrap any dev server with a chat panel and annotation tools",
+  "keywords": ["ai", "developer-tools", "overlay", "proxy", "annotations", "vite", "nextjs"],
+  "homepage": "https://github.com/calebbsides/progma#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calebbsides/progma.git"
+  },
+  "license": "MIT",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "bin": {
     "progma": "./dist/cli.js"
   },
@@ -11,14 +21,15 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist"
   },
-  "dependencies": {
+  "devDependencies": {
     "@progma/client": "workspace:*",
     "@progma/server": "workspace:*",
-    "dotenv": "^17.4.2"
-  },
-  "devDependencies": {
+    "dotenv": "^17.4.2",
     "rimraf": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
