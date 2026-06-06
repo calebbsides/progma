@@ -8,6 +8,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.3] — 2026-06-05
+
+### Changed
+
+- **UX** — system messages (HMR status) are now left-aligned like AI bubbles instead of centered
+- **UX** — AI reply no longer includes the raw diff block; only the plain-text explanation is shown in the chat panel
+
+### Fixed
+
+- **Correctness** — client: `addMessage` is now guarded against empty string; when the model returns only a diff with no prose, no blank bubble is rendered
+- **Correctness** — server `ai.ts`: diff-fence regexes named (`DIFF_RE_EXTRACT` / `DIFF_RE_STRIP`) and co-located with a comment to prevent silent drift on future pattern changes
+
 ## [0.0.2] — 2026-06-05
 
 ### Added

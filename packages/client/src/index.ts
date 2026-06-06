@@ -183,7 +183,7 @@ function init() {
       case 'ai:chat:response': {
         sendBtn.disabled = false
         const { reply, applied } = msg.payload as { reply: string; applied?: boolean }
-        addMessage('ai', reply)
+        if (reply) addMessage('ai', reply)
         if (applied) {
           addPendingHmrMessage()
         }

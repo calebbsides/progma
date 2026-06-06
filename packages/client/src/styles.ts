@@ -99,8 +99,10 @@ export const CSS = `
   .progma-msg.system {
     background: #1c1c1f;
     color: #71717a;
-    align-self: center;
+    align-self: flex-start;
+    text-align: left;
     font-size: 11px;
+    max-width: 90%;
   }
 
   #progma-input-row {

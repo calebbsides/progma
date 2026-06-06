@@ -76,9 +76,12 @@ Developer request: ${payload.message}`
     },
   })
 
-  const reply = result.choices[0]?.message?.content ?? ''
-  const diffMatch = reply.match(/```diff\n([\s\S]*?)```/)
-  const diff = diffMatch?.[1]
+  // Both regexes must match the same fence format — update together if changed
+  const DIFF_RE_EXTRACT = /```diff\n([\s\S]*?)```/
+  const DIFF_RE_STRIP   = /```diff\n[\s\S]*?```/g
+  const raw = result.choices[0]?.message?.content ?? ''
+  const diff = DIFF_RE_EXTRACT.exec(raw)?.[1]
+  const reply = raw.replace(DIFF_RE_STRIP, '').trim()
 
   if (diff) {
     console.log('[Progma] Raw diff from model:\n', diff)
