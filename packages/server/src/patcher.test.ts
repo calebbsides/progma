@@ -37,7 +37,7 @@ describe('applyDiff', () => {
    return (
      <div>
 -      <h1>Get started</h1>
-+      <h1>Progma</h1>
++      <h1>Protozoan</h1>
        <p>Edit src/App.tsx</p>
      </div>
 `
@@ -45,7 +45,7 @@ describe('applyDiff', () => {
     expect(result.success).toBe(true)
     expect(result.file).toBe('App.tsx')
     const content = fs.readFileSync(path.join(tmpDir, 'App.tsx'), 'utf8')
-    expect(content).toContain('<h1>Progma</h1>')
+    expect(content).toContain('<h1>Protozoan</h1>')
     expect(content).not.toContain('<h1>Get started</h1>')
   })
 
@@ -54,12 +54,12 @@ describe('applyDiff', () => {
 +++ b/App.tsx
 @@
 -      <h1>Get started</h1>
-+      <h1>Progma</h1>
++      <h1>Protozoan</h1>
 `
     const result = applyDiff(diff, fileIndex)
     expect(result.success).toBe(true)
     const content = fs.readFileSync(path.join(tmpDir, 'App.tsx'), 'utf8')
-    expect(content).toContain('<h1>Progma</h1>')
+    expect(content).toContain('<h1>Protozoan</h1>')
   })
 
   it('falls back to simple string replacement', () => {
@@ -67,12 +67,12 @@ describe('applyDiff', () => {
 +++ b/App.tsx
 @@ @@
 -      <p>Edit src/App.tsx</p>
-+      <p>Welcome to Progma</p>
++      <p>Welcome to Protozoan</p>
 `
     const result = applyDiff(diff, fileIndex)
     expect(result.success).toBe(true)
     const content = fs.readFileSync(path.join(tmpDir, 'App.tsx'), 'utf8')
-    expect(content).toContain('Welcome to Progma')
+    expect(content).toContain('Welcome to Protozoan')
   })
 
   it('returns error when file not found', () => {

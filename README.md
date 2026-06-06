@@ -1,19 +1,19 @@
-# Progma
+# Protozoan
 
 **The developer-native alternative to Figma.**
 
-Progma wraps your existing dev server and adds an AI-powered overlay for rapid prototyping and async collaboration — without leaving your codebase. Describe a change in plain language, see it applied to your source files instantly, and leave annotated feedback pinned to live elements on the page.
+Protozoan wraps your existing dev server and adds an AI-powered overlay for rapid prototyping and async collaboration — without leaving your codebase. Describe a change in plain language, see it applied to your source files instantly, and leave annotated feedback pinned to live elements on the page.
 
 ---
 
 ## How it works
 
-Progma acts as a transparent proxy in front of any dev server. It injects a lightweight overlay into every page that gives you:
+Protozoan acts as a transparent proxy in front of any dev server. It injects a lightweight overlay into every page that gives you:
 
 - **AI chat** — describe what you want, get a code diff applied to disk. Your existing HMR picks it up automatically.
 - **Element annotations** — click any element, leave a note. Pins persist across reloads and survive refactors.
 
-Your source files are the source of truth. Progma never touches your build config, framework, or toolchain.
+Your source files are the source of truth. Protozoan never touches your build config, framework, or toolchain.
 
 ---
 
@@ -27,7 +27,7 @@ Your source files are the source of truth. Progma never touches your build confi
 
 ## Installation
 
-Progma can be used without installing globally via `npx`:
+Protozoan can be used without installing globally via `npx`:
 
 ```bash
 npx protozoan dev
@@ -45,7 +45,7 @@ npm install -g protozoan
 
 ### 1. Set your API key
 
-Progma uses [OpenRouter](https://openrouter.ai) for AI code generation. A free tier is available — no credit card required.
+Protozoan uses [OpenRouter](https://openrouter.ai) for AI code generation. A free tier is available — no credit card required.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-...
@@ -59,34 +59,34 @@ To persist this across sessions, add it to your shell profile (`.bashrc`, `.zshr
 cd my-frontend-app
 ```
 
-### 3. Start Progma
+### 3. Start Protozoan
 
-**Auto-detect (recommended):** Progma will inspect your `package.json` and start your dev server automatically.
+**Auto-detect (recommended):** Protozoan will inspect your `package.json` and start your dev server automatically.
 
 ```bash
-npx progma dev
+npx protozoan dev
 ```
 
 **Explicit command:** Pass your dev server command directly after `--`.
 
 ```bash
-npx progma dev -- vite
-npx progma dev -- next dev
-npx progma dev -- webpack serve
-npx progma dev -- npm run dev
+npx protozoan dev -- vite
+npx protozoan dev -- next dev
+npx protozoan dev -- webpack serve
+npx protozoan dev -- npm run dev
 ```
 
 ### 4. Open your browser
 
-Progma starts on port `3000` by default. Open:
+Protozoan starts on port `3000` by default. Open:
 
 ```
 http://localhost:3000
 ```
 
-Your app loads exactly as it normally would — with a Progma toolbar in the corner.
+Your app loads exactly as it normally would — with a Protozoan toolbar in the corner.
 
-> Your underlying dev server runs on a separate port chosen automatically by Progma. HMR, fast refresh, and all dev server features continue to work as normal.
+> Your underlying dev server runs on a separate port chosen automatically by Protozoan. HMR, fast refresh, and all dev server features continue to work as normal.
 
 ---
 
@@ -94,12 +94,12 @@ Your app loads exactly as it normally would — with a Progma toolbar in the cor
 
 ### AI Code Generation
 
-1. Open the **AI chat panel** from the Progma toolbar (bottom-right).
+1. Open the **AI chat panel** from the Protozoan toolbar (bottom-right).
 2. Describe the change you want in plain language:
    - *"Make the navbar sticky and add a drop shadow"*
    - *"Replace the hero section placeholder text with lorem ipsum"*
    - *"Add a loading spinner to the submit button"*
-3. Progma sends your message along with the relevant source files to Claude.
+3. Protozoan sends your message along with the relevant source files to Claude.
 4. A **diff preview** appears — review the changes before applying.
 5. Click **Apply** to write the changes to disk. Your dev server hot-reloads automatically.
 
@@ -107,7 +107,7 @@ The AI has access to your full source file context and can make changes across m
 
 ### Annotations
 
-1. Click the **annotation icon** in the Progma toolbar to enter annotation mode.
+1. Click the **annotation icon** in the Protozoan toolbar to enter annotation mode.
 2. Click any element on the page. A pin appears and a note editor opens.
 3. Type your feedback and save. The pin persists on that element across page reloads.
 4. Click any pin to read, edit, or resolve the annotation.
@@ -119,65 +119,65 @@ To generate a code change from an annotation, open a pin and click **"Fix with A
 
 ## Configuration
 
-Progma is configured via environment variables — set them in your shell or a `.env` file in your project root:
+Protozoan is configured via environment variables — set them in your shell or a `.env` file in your project root:
 
 ```bash
 # Required
 OPENROUTER_API_KEY=sk-or-...
 
 # Optional
-PROGMA_PORT=3000                          # proxy port (default: 3000)
-PROGMA_MODEL=openai/gpt-4o               # any OpenRouter model (default: openai/gpt-oss-120b:free)
+PROTOZOAN_PORT=3000                          # proxy port (default: 3000)
+PROTOZOAN_MODEL=openai/gpt-4o               # any OpenRouter model (default: openai/gpt-oss-120b:free)
 ```
 
 ---
 
 ## Project Structure After Setup
 
-Running Progma for the first time creates a `.progma/` directory in your project root:
+Running Protozoan for the first time creates a `.protozoan/` directory in your project root:
 
 ```
 my-frontend-app/
-├── .progma/
+├── .protozoan/
 │   └── annotations.json   # annotation storage (commit this to share with your team)
-├── progma.config.ts        # optional config
+├── protozoan.config.ts        # optional config
 └── ... (your existing project)
 ```
 
-Add `.progma/annotations.json` to version control so teammates see your annotations. Add `progma.config.ts` to share configuration across the team.
+Add `.protozoan/annotations.json` to version control so teammates see your annotations. Add `protozoan.config.ts` to share configuration across the team.
 
 ---
 
 ## Sharing Annotations with Your Team
 
-Annotations are stored in `.progma/annotations.json`. Commit this file to your repo so everyone working on the project sees the same pins when they run Progma.
+Annotations are stored in `.protozoan/annotations.json`. Commit this file to your repo so everyone working on the project sees the same pins when they run Protozoan.
 
 ```bash
-git add .progma/annotations.json
-git commit -m "chore: add progma annotations"
+git add .protozoan/annotations.json
+git commit -m "chore: add protozoan annotations"
 ```
 
 ---
 
 ## Troubleshooting
 
-**HMR stopped working after adding Progma**
+**HMR stopped working after adding Protozoan**
 
-Make sure your dev server is being started through Progma, not separately. If you already have a dev server running on port 3000, Progma will pick a different port — check the terminal output for the actual URL.
+Make sure your dev server is being started through Protozoan, not separately. If you already have a dev server running on port 3000, Protozoan will pick a different port — check the terminal output for the actual URL.
 
 **"Could not detect dev server" error**
 
 Pass your dev server command explicitly:
 
 ```bash
-npx progma dev -- <your-dev-command>
+npx protozoan dev -- <your-dev-command>
 ```
 
 **AI changes aren't applying**
 
 - Check that `OPENROUTER_API_KEY` is set in your environment.
 - Make sure your source files are not inside `node_modules` or another ignored path.
-- Check that the file Progma is targeting is writable.
+- Check that the file Protozoan is targeting is writable.
 
 **Annotations aren't appearing after reload**
 
@@ -187,13 +187,13 @@ Annotations are matched to elements using fingerprinting. If the element's text 
 
 ## FAQ
 
-**Does Progma modify my build config or framework setup?**
+**Does Protozoan modify my build config or framework setup?**
 
-No. Progma is a proxy — it sits in front of your existing dev server and doesn't touch your Vite config, Next.js config, or any other toolchain file.
+No. Protozoan is a proxy — it sits in front of your existing dev server and doesn't touch your Vite config, Next.js config, or any other toolchain file.
 
 **Do I need to install anything in my project?**
 
-No. Progma injects its client script at runtime. There's nothing to add to your `package.json` or import into your code.
+No. Protozoan injects its client script at runtime. There's nothing to add to your `package.json` or import into your code.
 
 **Is my code sent to an AI provider?**
 
@@ -201,4 +201,4 @@ The relevant source files for the current page are sent to OpenRouter when you u
 
 **Does it work with TypeScript projects?**
 
-Yes. Progma applies diffs to your source files as-is — it doesn't compile or transform them. Your existing build toolchain handles TypeScript as it normally would.
+Yes. Protozoan applies diffs to your source files as-is — it doesn't compile or transform them. Your existing build toolchain handles TypeScript as it normally would.

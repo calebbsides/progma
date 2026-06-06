@@ -1,7 +1,7 @@
 PLAN.md
 node_modules
 dist
-.progma
+.protozoan
 *.tsbuildinfo
 examples/
 .env

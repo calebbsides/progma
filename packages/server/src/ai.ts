@@ -26,7 +26,7 @@ Example:
  export function Header() {
    return (
 -    <h1>Hello</h1>
-+    <h1>Progma</h1>
++    <h1>Protozoan</h1>
    )
  }
 \`\`\`

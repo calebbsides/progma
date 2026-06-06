@@ -14,7 +14,7 @@ vi.mock('./ai.js', () => ({
 +++ b/App.tsx
 @@
 -      <h1>Get started</h1>
-+      <h1>Progma</h1>
++      <h1>Protozoan</h1>
 `,
   }),
 }))
@@ -134,7 +134,7 @@ describe('ProtozoanServer WebSocket', () => {
     send(ws, {
       type: 'ai:chat',
       payload: {
-        message: 'change the header to Progma',
+        message: 'change the header to Protozoan',
         currentUrl: 'http://localhost:3000/',
       },
     })
@@ -149,7 +149,7 @@ describe('ProtozoanServer WebSocket', () => {
     send(ws, {
       type: 'ai:chat',
       payload: {
-        message: 'change the header to Progma',
+        message: 'change the header to Protozoan',
         currentUrl: 'http://localhost:3000/',
       },
     })
@@ -158,7 +158,7 @@ describe('ProtozoanServer WebSocket', () => {
 
     if (payload.applied) {
       const content = fs.readFileSync(path.join(tmpDir, 'App.tsx'), 'utf8')
-      expect(content).toContain('<h1>Progma</h1>')
+      expect(content).toContain('<h1>Protozoan</h1>')
     }
     // If not applied it means patch didn't match — still a valid code path
     expect(msg.type).toBe('ai:chat:response')
