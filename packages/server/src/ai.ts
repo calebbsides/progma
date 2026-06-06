@@ -8,8 +8,13 @@ const SYSTEM_PROMPT = `You are Progma, an AI assistant embedded in a developer's
 The developer is looking at a live web app and asking you to make code changes.
 You will be given the contents of relevant source files.
 
+When a "Selected element" is provided, you MUST:
+- Restrict ALL changes to the code that renders that specific element and nothing else.
+- Do NOT modify surrounding elements, parent components, sibling elements, global styles, or any other file unless the selected element's own rendering code is defined there.
+- If the request cannot be satisfied by changing only the selected element's code, say so — do not expand scope.
+
 When asked to make a change:
-1. Identify the exact file and lines to change.
+1. Identify the exact file and lines that render the selected element.
 2. Reply with a brief explanation of what you'll do.
 3. Then output a unified diff wrapped in a fenced code block tagged \`diff\`.
 
@@ -55,8 +60,12 @@ export async function runAiChat(
     .filter(Boolean)
     .join('\n\n')
 
+  const scopeNote = payload.selectedFingerprint
+    ? `Selected element (ONLY change code that renders this element): <${payload.selectedFingerprint.tag}> "${payload.selectedFingerprint.textSnippet}"`
+    : 'No element selected — use your best judgement about scope.'
+
   const userMessage = `Current URL: ${payload.currentUrl}
-${payload.selectedFingerprint ? `Selected element: <${payload.selectedFingerprint.tag}> "${payload.selectedFingerprint.textSnippet}"` : ''}
+${scopeNote}
 
 Project files:
 ${files.join('\n')}

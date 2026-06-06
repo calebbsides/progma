@@ -55,30 +55,56 @@ function applySimpleReplacement(
   diffText: string,
 ): string | false {
   const lines = diffText.split('\n')
-  const removedLines: string[] = []
-  const addedLines: string[] = []
+
+  // Build the "before" block (context + removed lines) and the "after" block
+  // (context + added lines) so the search string is unique in the file.
+  const beforeLines: string[] = []
+  const afterLines: string[] = []
+  let hasChange = false
 
   for (const line of lines) {
     if (line.startsWith('---') || line.startsWith('+++') || line.startsWith('@@') || line.startsWith('\\')) continue
-    if (line.startsWith('-')) removedLines.push(line.slice(1))
-    else if (line.startsWith('+')) addedLines.push(line.slice(1))
+    if (line.startsWith('-')) {
+      beforeLines.push(line.slice(1))
+      hasChange = true
+    } else if (line.startsWith('+')) {
+      afterLines.push(line.slice(1))
+      hasChange = true
+    } else {
+      // context line — appears in both before and after
+      const ctx = line.startsWith(' ') ? line.slice(1) : line
+      beforeLines.push(ctx)
+      afterLines.push(ctx)
+    }
   }
 
-  if (removedLines.length === 0) return false
+  // A pure-addition diff (no '-' lines) produces an empty beforeBlock.
+  // '' matches everywhere, so refuse rather than corrupt the file.
+  if (!hasChange || beforeLines.length === 0) return false
 
-  const removedBlock = removedLines.join('\n')
-  const addedBlock = addedLines.join('\n')
+  const beforeBlock = beforeLines.join('\n')
+  const afterBlock = afterLines.join('\n')
 
-  if (!original.includes(removedBlock)) {
-    // Try trimmed match: rebuild the replacement using trimmed lines
-    const trimmedOriginal = original.split('\n').map((l) => l.trimEnd()).join('\n')
-    const trimmedRemoved = removedLines.map((l) => l.trimEnd()).join('\n')
-    const trimmedAdded = addedLines.map((l) => l.trimEnd()).join('\n')
-    if (!trimmedOriginal.includes(trimmedRemoved)) return false
-    return trimmedOriginal.replace(trimmedRemoved, trimmedAdded)
+  const firstIdx = original.indexOf(beforeBlock)
+  if (firstIdx !== -1) {
+    // Refuse if ambiguous — same before-block appears more than once.
+    if (original.indexOf(beforeBlock, firstIdx + 1) !== -1) return false
+    return original.slice(0, firstIdx) + afterBlock + original.slice(firstIdx + beforeBlock.length)
   }
 
-  return original.replace(removedBlock, addedBlock)
+  // Trimmed-end fallback for whitespace-normalised diffs.
+  // Replace only the matched region in the original (not in trimmedOriginal) so
+  // we don't strip trailing whitespace from the rest of the file.
+  const trimmedOriginal = original.split('\n').map((l) => l.trimEnd()).join('\n')
+  const trimmedBefore = beforeLines.map((l) => l.trimEnd()).join('\n')
+  const trimmedAfter = afterLines.map((l) => l.trimEnd()).join('\n')
+  const trimmedIdx = trimmedOriginal.indexOf(trimmedBefore)
+  if (trimmedIdx !== -1) {
+    if (trimmedOriginal.indexOf(trimmedBefore, trimmedIdx + 1) !== -1) return false
+    return original.slice(0, trimmedIdx) + trimmedAfter + original.slice(trimmedIdx + trimmedBefore.length)
+  }
+
+  return false
 }
 
 export function applyDiff(

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter @progma/server build)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

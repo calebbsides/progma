@@ -1,6 +1,7 @@
 export const CSS = `
   #progma-root * { box-sizing: border-box; font-family: system-ui, sans-serif; }
 
+  /* FAB */
   #progma-toggle {
     position: fixed;
     bottom: 24px;
@@ -23,51 +24,117 @@ export const CSS = `
   #progma-toggle:hover { background: #3f3f46; }
   #progma-toggle.active { background: #6366f1; }
 
-  #progma-panel {
+  /* Full-screen opaque overlay — pointer-events: none so mouse events reach page elements */
+  #progma-overlay {
     position: fixed;
-    bottom: 84px;
-    right: 24px;
+    inset: 0;
     z-index: 99998;
-    width: 360px;
-    max-height: 520px;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  #progma-overlay.hidden { display: none; }
+
+  /* Modal panel — re-enable pointer events; position driven by JS on element click */
+  #progma-modal {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+    width: 380px;
+    max-height: calc(100vh - 24px);
     background: #18181b;
     border: 1px solid #3f3f46;
-    border-radius: 12px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    pointer-events: auto;
   }
-  #progma-panel.hidden { display: none; }
 
-  #progma-panel-header {
-    padding: 12px 16px;
+  /* Chat pane — hidden until an element is selected */
+  #progma-chat {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #progma-chat.hidden { display: none; }
+
+  /* Header */
+  #progma-modal-header {
+    padding: 14px 16px;
     border-bottom: 1px solid #3f3f46;
     display: flex;
     align-items: center;
-    gap: 8px;
   }
-  #progma-panel-header span {
+  #progma-title {
     font-size: 13px;
     font-weight: 600;
     color: #a1a1aa;
     flex: 1;
   }
-  #progma-annotate-btn {
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #52525b;
+  #progma-close {
     background: transparent;
-    color: #a1a1aa;
+    border: none;
+    color: #71717a;
+    font-size: 14px;
     cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
   }
-  #progma-annotate-btn.active {
-    background: #6366f1;
-    border-color: #6366f1;
-    color: #fff;
+  #progma-close:hover { color: #e4e4e7; }
+
+  /* Inspect bar */
+  #progma-inspect-bar {
+    padding: 10px 16px;
+    border-bottom: 1px solid #3f3f46;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+  }
+  #progma-inspect-hint {
+    font-size: 12px;
+    color: #71717a;
   }
 
+  /* Selected element badge */
+  #progma-selected-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1e1b4b;
+    border: 1px solid #4338ca;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #a5b4fc;
+    font-family: monospace;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  #progma-selected-badge.hidden { display: none; }
+  #progma-selected-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  #progma-deselect {
+    background: transparent;
+    border: none;
+    color: #6366f1;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  #progma-deselect:hover { color: #a5b4fc; }
+
+  /* Messages */
   #progma-messages {
     flex: 1;
     overflow-y: auto;
@@ -75,6 +142,8 @@ export const CSS = `
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-height: 200px;
+    max-height: 340px;
   }
 
   .progma-msg {
@@ -100,11 +169,11 @@ export const CSS = `
     background: #1c1c1f;
     color: #71717a;
     align-self: flex-start;
-    text-align: left;
     font-size: 11px;
     max-width: 90%;
   }
 
+  /* Input row */
   #progma-input-row {
     display: flex;
     gap: 8px;
@@ -137,12 +206,21 @@ export const CSS = `
   }
   #progma-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .progma-highlight {
+  /* Element hover highlight — visible through the overlay */
+  .progma-hovered {
     outline: 2px solid #6366f1 !important;
     outline-offset: 2px !important;
     cursor: crosshair !important;
   }
 
+  /* Selected element highlight */
+  .progma-selected {
+    outline: 2px solid #818cf8 !important;
+    outline-offset: 2px !important;
+    background-color: rgba(99, 102, 241, 0.08) !important;
+  }
+
+  /* Annotation pins */
   .progma-pin {
     position: fixed;
     width: 20px;
@@ -153,67 +231,5 @@ export const CSS = `
     z-index: 99990;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-
-  #progma-annotation-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.5);
-  }
-  #progma-annotation-modal.hidden { display: none; }
-  #progma-annotation-box {
-    background: #18181b;
-    border: 1px solid #3f3f46;
-    border-radius: 12px;
-    padding: 20px;
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  #progma-annotation-box h3 {
-    margin: 0;
-    font-size: 14px;
-    color: #e4e4e7;
-  }
-  #progma-annotation-text {
-    background: #27272a;
-    border: 1px solid #3f3f46;
-    border-radius: 8px;
-    color: #e4e4e7;
-    font-size: 13px;
-    padding: 8px 12px;
-    resize: vertical;
-    height: 80px;
-    outline: none;
-  }
-  #progma-annotation-text:focus { border-color: #6366f1; }
-  #progma-annotation-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-  }
-  .progma-btn-secondary {
-    background: transparent;
-    border: 1px solid #52525b;
-    color: #a1a1aa;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .progma-btn-primary {
-    background: #6366f1;
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 13px;
-    cursor: pointer;
-    font-weight: 600;
   }
 `

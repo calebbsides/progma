@@ -4,8 +4,11 @@ import { fingerprintElement } from './fingerprint.js'
 import { ProgmaSocket } from './socket.js'
 import { CSS } from './styles.js'
 
+const MODAL_W = 380
+const MODAL_H = 480 // approximate max height
+const MARGIN = 12
+
 function init() {
-  // Inject styles
   const style = document.createElement('style')
   style.textContent = CSS
   document.head.appendChild(style)
@@ -15,136 +18,203 @@ function init() {
   document.body.appendChild(root)
 
   // --- State ---
-  let panelOpen = false
-  let annotateMode = false
+  let overlayOpen = false
   let hoveredEl: Element | null = null
-  let pendingFingerprint: ElementFingerprint | null = null
+  let selectedEl: Element | null = null
   let selectedFingerprint: ElementFingerprint | null = null
   let annotations: Annotation[] = []
+  // Per-element chat history: domPathHash → array of message DOM nodes
+  const elementThreads = new Map<string, HTMLElement[]>()
+  let activeThreadKey: string | null = null
 
   // --- Socket ---
   const socket = new ProgmaSocket()
   socket.connect()
   socket.onMessage(handleServerMessage)
-
-  // Request annotations on load
   socket.send({ type: 'annotation:list', payload: {} })
 
   // --- Build UI ---
   root.innerHTML = `
-    <button id="progma-toggle" title="Progma">✦</button>
+    <button id="progma-toggle" title="Open Progma">✦</button>
 
-    <div id="progma-panel" class="hidden">
-      <div id="progma-panel-header">
-        <span>Progma</span>
-        <button id="progma-annotate-btn">Annotate</button>
-      </div>
-      <div id="progma-messages"></div>
-      <div id="progma-input-row">
-        <textarea id="progma-input" placeholder="Ask AI to change something…" rows="1"></textarea>
-        <button id="progma-send">Send</button>
-      </div>
-    </div>
+    <div id="progma-overlay" class="hidden">
+      <div id="progma-modal">
+        <div id="progma-modal-header">
+          <span id="progma-title">Progma</span>
+          <button id="progma-close" title="Close">✕</button>
+        </div>
 
-    <div id="progma-annotation-modal" class="hidden">
-      <div id="progma-annotation-box">
-        <h3>Add annotation</h3>
-        <textarea id="progma-annotation-text" placeholder="Describe what needs to change…"></textarea>
-        <div id="progma-annotation-actions">
-          <button class="progma-btn-secondary" id="progma-annotation-cancel">Cancel</button>
-          <button class="progma-btn-primary" id="progma-annotation-save">Save</button>
+        <div id="progma-inspect-bar">
+          <div id="progma-inspect-hint">Click any element on the page to select it</div>
+          <div id="progma-selected-badge" class="hidden">
+            <span id="progma-selected-label"></span>
+            <button id="progma-deselect" title="Clear selection">✕</button>
+          </div>
+        </div>
+
+        <div id="progma-chat" class="hidden">
+          <div id="progma-messages"></div>
+          <div id="progma-input-row">
+            <textarea id="progma-input" placeholder="Ask AI to change the selected element…" rows="1"></textarea>
+            <button id="progma-send">Send</button>
+          </div>
         </div>
       </div>
     </div>
   `
 
   const toggle = document.getElementById('progma-toggle')!
-  const panel = document.getElementById('progma-panel')!
-  const annotateBtn = document.getElementById('progma-annotate-btn')!
+  const overlay = document.getElementById('progma-overlay')!
+  const modal = document.getElementById('progma-modal')!
+  const closeBtn = document.getElementById('progma-close')!
+  const inspectHint = document.getElementById('progma-inspect-hint')!
+  const selectedBadge = document.getElementById('progma-selected-badge')!
+  const selectedLabel = document.getElementById('progma-selected-label')!
+  const deselectBtn = document.getElementById('progma-deselect')!
+  const chat = document.getElementById('progma-chat')!
   const messages = document.getElementById('progma-messages')!
   const input = document.getElementById('progma-input') as HTMLTextAreaElement
   const sendBtn = document.getElementById('progma-send') as HTMLButtonElement
-  const modal = document.getElementById('progma-annotation-modal')!
-  const annotationText = document.getElementById('progma-annotation-text') as HTMLTextAreaElement
-  const annotationCancel = document.getElementById('progma-annotation-cancel')!
-  const annotationSave = document.getElementById('progma-annotation-save')!
 
-  // --- Toggle panel ---
-  toggle.addEventListener('click', () => {
-    panelOpen = !panelOpen
-    panel.classList.toggle('hidden', !panelOpen)
-    toggle.classList.toggle('active', panelOpen)
-  })
+  // --- Open / close overlay ---
+  function openOverlay() {
+    overlayOpen = true
+    overlay.classList.remove('hidden')
+    toggle.classList.add('active')
+    // Reset modal to top-left until positioned; keeps it off-screen until a click
+    modal.style.left = '-9999px'
+    modal.style.top = '-9999px'
+  }
 
-  // --- Annotate mode ---
-  annotateBtn.addEventListener('click', () => {
-    annotateMode = !annotateMode
-    annotateBtn.classList.toggle('active', annotateMode)
-    annotateBtn.textContent = annotateMode ? 'Cancel' : 'Annotate'
-    if (!annotateMode && hoveredEl) {
-      hoveredEl.classList.remove('progma-highlight')
-      hoveredEl = null
-    }
-  })
+  function closeOverlay() {
+    overlayOpen = false
+    overlay.classList.add('hidden')
+    toggle.classList.remove('active')
+    clearHover()
+    clearSelection()
+    elementThreads.clear()
+  }
+
+  toggle.addEventListener('click', () => overlayOpen ? closeOverlay() : openOverlay())
+  closeBtn.addEventListener('click', closeOverlay)
 
   // --- Element hover highlight ---
   document.addEventListener('mouseover', (e) => {
-    if (!annotateMode) return
+    if (!overlayOpen) return
     const target = e.target as Element
     if (root.contains(target)) return
-    if (hoveredEl && hoveredEl !== target) {
-      hoveredEl.classList.remove('progma-highlight')
-    }
+    if (target === selectedEl) return
+    if (hoveredEl && hoveredEl !== target) hoveredEl.classList.remove('progma-hovered')
     hoveredEl = target
-    hoveredEl.classList.add('progma-highlight')
+    hoveredEl.classList.add('progma-hovered')
   })
 
   document.addEventListener('mouseout', (e) => {
-    if (!annotateMode) return
+    if (!overlayOpen) return
     const target = e.target as Element
     if (root.contains(target)) return
-    target.classList.remove('progma-highlight')
+    if (target === selectedEl) return
+    target.classList.remove('progma-hovered')
+    if (hoveredEl === target) hoveredEl = null
   })
 
-  // --- Click to annotate ---
+  // --- Click to select element ---
   document.addEventListener('click', (e) => {
-    if (!annotateMode) return
+    if (!overlayOpen) return
     const target = e.target as Element
     if (root.contains(target)) return
     e.preventDefault()
     e.stopPropagation()
 
-    pendingFingerprint = fingerprintElement(target)
-    target.classList.remove('progma-highlight')
-    hoveredEl = null
-    annotateMode = false
-    annotateBtn.classList.remove('active')
-    annotateBtn.textContent = 'Annotate'
-
-    modal.classList.remove('hidden')
-    annotationText.value = ''
-    annotationText.focus()
+    clearHover()
+    selectElement(target, e.clientX, e.clientY)
   }, true)
 
-  // --- Annotation modal actions ---
-  annotationCancel.addEventListener('click', () => {
-    modal.classList.add('hidden')
-    pendingFingerprint = null
-  })
+  function positionModal(cx: number, cy: number) {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
 
-  annotationSave.addEventListener('click', () => {
-    if (!pendingFingerprint || !annotationText.value.trim()) return
-    socket.send({
-      type: 'annotation:save',
-      payload: {
-        fingerprint: pendingFingerprint,
-        comment: annotationText.value.trim(),
-      },
-    })
-    modal.classList.add('hidden')
-    pendingFingerprint = null
-    addSystemMessage('Annotation saved.')
-  })
+    // Prefer opening to the right of the cursor; flip left if it would overflow
+    let left = cx + MARGIN
+    if (left + MODAL_W > vw - MARGIN) left = cx - MODAL_W - MARGIN
+
+    // Prefer opening below the cursor; flip up if it would overflow
+    let top = cy + MARGIN
+    if (top + MODAL_H > vh - MARGIN) top = cy - MODAL_H - MARGIN
+
+    // Hard-clamp to viewport
+    left = Math.max(MARGIN, Math.min(left, vw - MODAL_W - MARGIN))
+    top = Math.max(MARGIN, Math.min(top, vh - MODAL_H - MARGIN))
+
+    modal.style.left = `${left}px`
+    modal.style.top = `${top}px`
+  }
+
+  function saveThread() {
+    if (activeThreadKey !== null) {
+      elementThreads.set(activeThreadKey, Array.from(messages.children) as HTMLElement[])
+    }
+  }
+
+  function loadThread(key: string) {
+    messages.innerHTML = ''
+    const nodes = elementThreads.get(key)
+    if (nodes) nodes.forEach(n => messages.appendChild(n))
+    messages.scrollTop = messages.scrollHeight
+  }
+
+  function selectElement(el: Element, cx: number, cy: number) {
+    saveThread()
+
+    if (selectedEl) selectedEl.classList.remove('progma-selected')
+    selectedEl = el
+    selectedEl.classList.add('progma-selected')
+    selectedFingerprint = fingerprintElement(el)
+
+    const tag = el.tagName.toLowerCase()
+    const id = el.id ? `#${el.id}` : ''
+    const cls = el.classList.length
+      ? '.' + Array.from(el.classList).filter(c => !c.startsWith('progma-')).slice(0, 2).join('.')
+      : ''
+    selectedLabel.textContent = `${tag}${id}${cls}`
+    selectedBadge.classList.remove('hidden')
+    inspectHint.classList.add('hidden')
+
+    // Load this element's thread
+    activeThreadKey = selectedFingerprint.domPathHash
+    loadThread(activeThreadKey)
+
+    // Show chat and position modal at cursor
+    chat.classList.remove('hidden')
+    positionModal(cx, cy)
+    input.placeholder = `Ask AI to change <${tag}>…`
+    input.focus()
+  }
+
+  function clearSelection() {
+    saveThread()
+    activeThreadKey = null
+
+    if (selectedEl) {
+      selectedEl.classList.remove('progma-selected')
+      selectedEl = null
+    }
+    selectedFingerprint = null
+    selectedBadge.classList.add('hidden')
+    inspectHint.classList.remove('hidden')
+    chat.classList.add('hidden')
+    messages.innerHTML = ''
+    input.placeholder = 'Ask AI to change the selected element…'
+  }
+
+  function clearHover() {
+    if (hoveredEl) {
+      hoveredEl.classList.remove('progma-hovered')
+      hoveredEl = null
+    }
+  }
+
+  deselectBtn.addEventListener('click', clearSelection)
 
   // --- AI chat ---
   sendBtn.addEventListener('click', sendMessage)
@@ -184,9 +254,7 @@ function init() {
         sendBtn.disabled = false
         const { reply, applied } = msg.payload as { reply: string; applied?: boolean }
         if (reply) addMessage('ai', reply)
-        if (applied) {
-          addPendingHmrMessage()
-        }
+        if (applied) addPendingHmrMessage()
         break
       }
 
@@ -227,22 +295,12 @@ function init() {
     messages.appendChild(el)
     messages.scrollTop = messages.scrollHeight
 
-    // Vite fires this custom event after each hot update
-    const onUpdate = () => {
-      el.textContent = '✓ Updated'
-      cleanup()
-    }
-    // Fallback: if HMR doesn't fire within 5s, resolve anyway
-    const timer = setTimeout(() => {
-      el.textContent = '✓ Applied'
-      cleanup()
-    }, 5000)
-
+    const onUpdate = () => { el.textContent = '✓ Updated'; cleanup() }
+    const timer = setTimeout(() => { el.textContent = '✓ Applied'; cleanup() }, 5000)
     function cleanup() {
       clearTimeout(timer)
       window.removeEventListener('vite:afterUpdate', onUpdate)
     }
-
     window.addEventListener('vite:afterUpdate', onUpdate, { once: true })
   }
 
@@ -259,11 +317,7 @@ function init() {
       pin.style.top = `${rect.top + window.scrollY - 8}px`
       pin.title = ann.comment
       pin.addEventListener('click', () => {
-        if (!panelOpen) {
-          panelOpen = true
-          panel.classList.remove('hidden')
-          toggle.classList.add('active')
-        }
+        openOverlay()
         addSystemMessage(`📌 ${ann.comment}`)
       })
       document.body.appendChild(pin)
@@ -272,13 +326,12 @@ function init() {
 
   function findElement(fingerprint: ElementFingerprint): Element | null {
     if (fingerprint.dataProgmaId) {
-      // Escape the ID value to prevent CSS selector injection
       const escaped = fingerprint.dataProgmaId.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
       try {
         const el = document.querySelector(`[data-progma-id="${escaped}"]`)
         if (el) return el
       } catch {
-        // invalid selector — fall through to fingerprint matching
+        // invalid selector — fall through
       }
     }
     const candidates = document.querySelectorAll(fingerprint.tag)

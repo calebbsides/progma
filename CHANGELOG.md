@@ -8,6 +8,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **UX** — FAB now opens a full-screen opaque overlay (modal-style) instead of a small side panel
+- **UX** — Element inspection is always active when the overlay is open; hovering any page element highlights it with an indigo outline (Chrome DevTools inspect style)
+- **UX** — Clicking an element selects it; a selector badge (`tag#id.class`) appears in the inspect bar showing the active target
+- **UX** — Selected element gets a persistent indigo outline + tint so it remains visually distinct from hovered elements
+- **UX** — Chat input placeholder updates to reflect the selected element; AI changes are scoped to that element
+- **UX** — Clicking the overlay backdrop or the ✕ button closes the overlay and clears hover state
+- **UX** — FAB now toggles the overlay closed when clicked while open (previously only opened)
+- **Removed** — Annotation mode (inline annotation pins + modal) has been removed in favour of the new selection-based chat flow
+
+### Fixed
+
+- **patcher** — Pure-addition diffs (no `-` lines) no longer corrupt the target file by prepending content at byte 0; they now fall back cleanly to an error
+- **patcher** — `applySimpleReplacement` now detects ambiguous matches (same before-block appearing more than once in the file) and refuses rather than silently patching the wrong location
+- **patcher** — Trimmed-end whitespace fallback no longer strips trailing whitespace from the entire file; only the matched region is replaced in the original content
+- **client** — Closing the overlay now clears the per-element thread cache, preventing unbounded memory growth across repeated open/close cycles
+
 ## [0.0.1] — 2026-06-05 (protozoan)
 
 ### Changed
