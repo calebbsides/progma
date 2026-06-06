@@ -1,6 +1,6 @@
 {
   "name": "protozoan",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AI-powered dev overlay — wrap any dev server with a chat panel and annotation tools",
   "keywords": [
     "ai",
