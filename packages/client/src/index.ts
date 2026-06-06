@@ -1,7 +1,7 @@
-import { fingerprintsMatch } from '@progma/core'
-import type { Annotation, ElementFingerprint, ProgmaMessage } from '@progma/core'
+import { fingerprintsMatch } from '@protozoan/core'
+import type { Annotation, ElementFingerprint, ProtozoanMessage } from '@protozoan/core'
 import { fingerprintElement } from './fingerprint.js'
-import { ProgmaSocket } from './socket.js'
+import { ProtozoanSocket } from './socket.js'
 import { CSS } from './styles.js'
 
 const MODAL_W = 380
@@ -14,7 +14,7 @@ function init() {
   document.head.appendChild(style)
 
   const root = document.createElement('div')
-  root.id = 'progma-root'
+  root.id = 'protozoan-root'
   document.body.appendChild(root)
 
   // --- State ---
@@ -28,53 +28,53 @@ function init() {
   let activeThreadKey: string | null = null
 
   // --- Socket ---
-  const socket = new ProgmaSocket()
+  const socket = new ProtozoanSocket()
   socket.connect()
   socket.onMessage(handleServerMessage)
   socket.send({ type: 'annotation:list', payload: {} })
 
   // --- Build UI ---
   root.innerHTML = `
-    <button id="progma-toggle" title="Open Progma">✦</button>
+    <button id="protozoan-toggle" title="Open Protozoan">✦</button>
 
-    <div id="progma-overlay" class="hidden">
-      <div id="progma-modal">
-        <div id="progma-modal-header">
-          <span id="progma-title">Progma</span>
-          <button id="progma-close" title="Close">✕</button>
+    <div id="protozoan-overlay" class="hidden">
+      <div id="protozoan-modal">
+        <div id="protozoan-modal-header">
+          <span id="protozoan-title">Protozoan</span>
+          <button id="protozoan-close" title="Close">✕</button>
         </div>
 
-        <div id="progma-inspect-bar">
-          <div id="progma-inspect-hint">Click any element on the page to select it</div>
-          <div id="progma-selected-badge" class="hidden">
-            <span id="progma-selected-label"></span>
-            <button id="progma-deselect" title="Clear selection">✕</button>
+        <div id="protozoan-inspect-bar">
+          <div id="protozoan-inspect-hint">Click any element on the page to select it</div>
+          <div id="protozoan-selected-badge" class="hidden">
+            <span id="protozoan-selected-label"></span>
+            <button id="protozoan-deselect" title="Clear selection">✕</button>
           </div>
         </div>
 
-        <div id="progma-chat" class="hidden">
-          <div id="progma-messages"></div>
-          <div id="progma-input-row">
-            <textarea id="progma-input" placeholder="Ask AI to change the selected element…" rows="1"></textarea>
-            <button id="progma-send">Send</button>
+        <div id="protozoan-chat" class="hidden">
+          <div id="protozoan-messages"></div>
+          <div id="protozoan-input-row">
+            <textarea id="protozoan-input" placeholder="Ask AI to change the selected element…" rows="1"></textarea>
+            <button id="protozoan-send">Send</button>
           </div>
         </div>
       </div>
     </div>
   `
 
-  const toggle = document.getElementById('progma-toggle')!
-  const overlay = document.getElementById('progma-overlay')!
-  const modal = document.getElementById('progma-modal')!
-  const closeBtn = document.getElementById('progma-close')!
-  const inspectHint = document.getElementById('progma-inspect-hint')!
-  const selectedBadge = document.getElementById('progma-selected-badge')!
-  const selectedLabel = document.getElementById('progma-selected-label')!
-  const deselectBtn = document.getElementById('progma-deselect')!
-  const chat = document.getElementById('progma-chat')!
-  const messages = document.getElementById('progma-messages')!
-  const input = document.getElementById('progma-input') as HTMLTextAreaElement
-  const sendBtn = document.getElementById('progma-send') as HTMLButtonElement
+  const toggle = document.getElementById('protozoan-toggle')!
+  const overlay = document.getElementById('protozoan-overlay')!
+  const modal = document.getElementById('protozoan-modal')!
+  const closeBtn = document.getElementById('protozoan-close')!
+  const inspectHint = document.getElementById('protozoan-inspect-hint')!
+  const selectedBadge = document.getElementById('protozoan-selected-badge')!
+  const selectedLabel = document.getElementById('protozoan-selected-label')!
+  const deselectBtn = document.getElementById('protozoan-deselect')!
+  const chat = document.getElementById('protozoan-chat')!
+  const messages = document.getElementById('protozoan-messages')!
+  const input = document.getElementById('protozoan-input') as HTMLTextAreaElement
+  const sendBtn = document.getElementById('protozoan-send') as HTMLButtonElement
 
   // --- Open / close overlay ---
   function openOverlay() {
@@ -104,9 +104,9 @@ function init() {
     const target = e.target as Element
     if (root.contains(target)) return
     if (target === selectedEl) return
-    if (hoveredEl && hoveredEl !== target) hoveredEl.classList.remove('progma-hovered')
+    if (hoveredEl && hoveredEl !== target) hoveredEl.classList.remove('protozoan-hovered')
     hoveredEl = target
-    hoveredEl.classList.add('progma-hovered')
+    hoveredEl.classList.add('protozoan-hovered')
   })
 
   document.addEventListener('mouseout', (e) => {
@@ -114,7 +114,7 @@ function init() {
     const target = e.target as Element
     if (root.contains(target)) return
     if (target === selectedEl) return
-    target.classList.remove('progma-hovered')
+    target.classList.remove('protozoan-hovered')
     if (hoveredEl === target) hoveredEl = null
   })
 
@@ -166,15 +166,15 @@ function init() {
   function selectElement(el: Element, cx: number, cy: number) {
     saveThread()
 
-    if (selectedEl) selectedEl.classList.remove('progma-selected')
+    if (selectedEl) selectedEl.classList.remove('protozoan-selected')
     selectedEl = el
-    selectedEl.classList.add('progma-selected')
+    selectedEl.classList.add('protozoan-selected')
     selectedFingerprint = fingerprintElement(el)
 
     const tag = el.tagName.toLowerCase()
     const id = el.id ? `#${el.id}` : ''
     const cls = el.classList.length
-      ? '.' + Array.from(el.classList).filter(c => !c.startsWith('progma-')).slice(0, 2).join('.')
+      ? '.' + Array.from(el.classList).filter(c => !c.startsWith('protozoan-')).slice(0, 2).join('.')
       : ''
     selectedLabel.textContent = `${tag}${id}${cls}`
     selectedBadge.classList.remove('hidden')
@@ -196,7 +196,7 @@ function init() {
     activeThreadKey = null
 
     if (selectedEl) {
-      selectedEl.classList.remove('progma-selected')
+      selectedEl.classList.remove('protozoan-selected')
       selectedEl = null
     }
     selectedFingerprint = null
@@ -209,7 +209,7 @@ function init() {
 
   function clearHover() {
     if (hoveredEl) {
-      hoveredEl.classList.remove('progma-hovered')
+      hoveredEl.classList.remove('protozoan-hovered')
       hoveredEl = null
     }
   }
@@ -243,7 +243,7 @@ function init() {
   }
 
   // --- Server message handler ---
-  function handleServerMessage(msg: ProgmaMessage) {
+  function handleServerMessage(msg: ProtozoanMessage) {
     switch (msg.type) {
       case 'annotation:list:response':
         annotations = msg.payload as Annotation[]
@@ -274,7 +274,7 @@ function init() {
   // --- Helpers ---
   function addMessage(role: 'user' | 'ai', text: string) {
     const el = document.createElement('div')
-    el.className = `progma-msg ${role}`
+    el.className = `protozoan-msg ${role}`
     el.textContent = text
     messages.appendChild(el)
     messages.scrollTop = messages.scrollHeight
@@ -282,7 +282,7 @@ function init() {
 
   function addSystemMessage(text: string) {
     const el = document.createElement('div')
-    el.className = 'progma-msg system'
+    el.className = 'protozoan-msg system'
     el.textContent = text
     messages.appendChild(el)
     messages.scrollTop = messages.scrollHeight
@@ -290,7 +290,7 @@ function init() {
 
   function addPendingHmrMessage() {
     const el = document.createElement('div')
-    el.className = 'progma-msg system'
+    el.className = 'protozoan-msg system'
     el.textContent = 'Change applied — waiting for HMR…'
     messages.appendChild(el)
     messages.scrollTop = messages.scrollHeight
@@ -305,14 +305,14 @@ function init() {
   }
 
   function renderPins() {
-    document.querySelectorAll('.progma-pin').forEach((p) => p.remove())
+    document.querySelectorAll('.protozoan-pin').forEach((p) => p.remove())
     for (const ann of annotations) {
       if (ann.resolved) continue
       const el = findElement(ann.fingerprint)
       if (!el) continue
       const rect = el.getBoundingClientRect()
       const pin = document.createElement('div')
-      pin.className = 'progma-pin'
+      pin.className = 'protozoan-pin'
       pin.style.left = `${rect.left + window.scrollX - 8}px`
       pin.style.top = `${rect.top + window.scrollY - 8}px`
       pin.title = ann.comment
@@ -325,10 +325,10 @@ function init() {
   }
 
   function findElement(fingerprint: ElementFingerprint): Element | null {
-    if (fingerprint.dataProgmaId) {
-      const escaped = fingerprint.dataProgmaId.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    if (fingerprint.dataProtozoanId) {
+      const escaped = fingerprint.dataProtozoanId.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
       try {
-        const el = document.querySelector(`[data-progma-id="${escaped}"]`)
+        const el = document.querySelector(`[data-protozoan-id="${escaped}"]`)
         if (el) return el
       } catch {
         // invalid selector — fall through

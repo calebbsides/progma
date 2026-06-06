@@ -3,7 +3,7 @@ export interface ElementFingerprint {
   domPathHash: string
   textSnippet: string
   boundingBox: { x: number; y: number; width: number; height: number }
-  dataProgmaId?: string
+  dataProtozoanId?: string
 }
 
 export interface Annotation {
@@ -16,12 +16,12 @@ export interface Annotation {
   updatedAt: string
 }
 
-export interface ProgmaMessage {
-  type: ProgmaMessageType
+export interface ProtozoanMessage {
+  type: ProtozoanMessageType
   payload: unknown
 }
 
-export type ProgmaMessageType =
+export type ProtozoanMessageType =
   | 'annotation:save'
   | 'annotation:list'
   | 'annotation:list:response'

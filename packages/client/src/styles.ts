@@ -1,8 +1,8 @@
 export const CSS = `
-  #progma-root * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+  #protozoan-root * { box-sizing: border-box; font-family: system-ui, sans-serif; }
 
   /* FAB */
-  #progma-toggle {
+  #protozoan-toggle {
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -21,11 +21,11 @@ export const CSS = `
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     transition: background 0.15s;
   }
-  #progma-toggle:hover { background: #3f3f46; }
-  #progma-toggle.active { background: #6366f1; }
+  #protozoan-toggle:hover { background: #3f3f46; }
+  #protozoan-toggle.active { background: #6366f1; }
 
   /* Full-screen opaque overlay — pointer-events: none so mouse events reach page elements */
-  #progma-overlay {
+  #protozoan-overlay {
     position: fixed;
     inset: 0;
     z-index: 99998;
@@ -35,10 +35,10 @@ export const CSS = `
     justify-content: center;
     pointer-events: none;
   }
-  #progma-overlay.hidden { display: none; }
+  #protozoan-overlay.hidden { display: none; }
 
   /* Modal panel — re-enable pointer events; position driven by JS on element click */
-  #progma-modal {
+  #protozoan-modal {
     position: fixed;
     left: -9999px;
     top: -9999px;
@@ -55,27 +55,27 @@ export const CSS = `
   }
 
   /* Chat pane — hidden until an element is selected */
-  #progma-chat {
+  #protozoan-chat {
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
-  #progma-chat.hidden { display: none; }
+  #protozoan-chat.hidden { display: none; }
 
   /* Header */
-  #progma-modal-header {
+  #protozoan-modal-header {
     padding: 14px 16px;
     border-bottom: 1px solid #3f3f46;
     display: flex;
     align-items: center;
   }
-  #progma-title {
+  #protozoan-title {
     font-size: 13px;
     font-weight: 600;
     color: #a1a1aa;
     flex: 1;
   }
-  #progma-close {
+  #protozoan-close {
     background: transparent;
     border: none;
     color: #71717a;
@@ -85,23 +85,23 @@ export const CSS = `
     border-radius: 4px;
     line-height: 1;
   }
-  #progma-close:hover { color: #e4e4e7; }
+  #protozoan-close:hover { color: #e4e4e7; }
 
   /* Inspect bar */
-  #progma-inspect-bar {
+  #protozoan-inspect-bar {
     padding: 10px 16px;
     border-bottom: 1px solid #3f3f46;
     min-height: 42px;
     display: flex;
     align-items: center;
   }
-  #progma-inspect-hint {
+  #protozoan-inspect-hint {
     font-size: 12px;
     color: #71717a;
   }
 
   /* Selected element badge */
-  #progma-selected-badge {
+  #protozoan-selected-badge {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -115,14 +115,14 @@ export const CSS = `
     max-width: 100%;
     overflow: hidden;
   }
-  #progma-selected-badge.hidden { display: none; }
-  #progma-selected-label {
+  #protozoan-selected-badge.hidden { display: none; }
+  #protozoan-selected-label {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
   }
-  #progma-deselect {
+  #protozoan-deselect {
     background: transparent;
     border: none;
     color: #6366f1;
@@ -132,10 +132,10 @@ export const CSS = `
     line-height: 1;
     flex-shrink: 0;
   }
-  #progma-deselect:hover { color: #a5b4fc; }
+  #protozoan-deselect:hover { color: #a5b4fc; }
 
   /* Messages */
-  #progma-messages {
+  #protozoan-messages {
     flex: 1;
     overflow-y: auto;
     padding: 12px;
@@ -146,7 +146,7 @@ export const CSS = `
     max-height: 340px;
   }
 
-  .progma-msg {
+  .protozoan-msg {
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 13px;
@@ -155,17 +155,17 @@ export const CSS = `
     white-space: pre-wrap;
     word-break: break-word;
   }
-  .progma-msg.user {
+  .protozoan-msg.user {
     background: #6366f1;
     color: #fff;
     align-self: flex-end;
   }
-  .progma-msg.ai {
+  .protozoan-msg.ai {
     background: #27272a;
     color: #e4e4e7;
     align-self: flex-start;
   }
-  .progma-msg.system {
+  .protozoan-msg.system {
     background: #1c1c1f;
     color: #71717a;
     align-self: flex-start;
@@ -174,13 +174,13 @@ export const CSS = `
   }
 
   /* Input row */
-  #progma-input-row {
+  #protozoan-input-row {
     display: flex;
     gap: 8px;
     padding: 12px;
     border-top: 1px solid #3f3f46;
   }
-  #progma-input {
+  #protozoan-input {
     flex: 1;
     background: #27272a;
     border: 1px solid #3f3f46;
@@ -193,8 +193,8 @@ export const CSS = `
     height: 36px;
     line-height: 20px;
   }
-  #progma-input:focus { border-color: #6366f1; }
-  #progma-send {
+  #protozoan-input:focus { border-color: #6366f1; }
+  #protozoan-send {
     background: #6366f1;
     color: #fff;
     border: none;
@@ -204,24 +204,24 @@ export const CSS = `
     font-size: 13px;
     font-weight: 600;
   }
-  #progma-send:disabled { opacity: 0.5; cursor: not-allowed; }
+  #protozoan-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* Element hover highlight — visible through the overlay */
-  .progma-hovered {
+  .protozoan-hovered {
     outline: 2px solid #6366f1 !important;
     outline-offset: 2px !important;
     cursor: crosshair !important;
   }
 
   /* Selected element highlight */
-  .progma-selected {
+  .protozoan-selected {
     outline: 2px solid #818cf8 !important;
     outline-offset: 2px !important;
     background-color: rgba(99, 102, 241, 0.08) !important;
   }
 
   /* Annotation pins */
-  .progma-pin {
+  .protozoan-pin {
     position: fixed;
     width: 20px;
     height: 20px;

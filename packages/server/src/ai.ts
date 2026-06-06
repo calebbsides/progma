@@ -1,10 +1,10 @@
 import { OpenRouter } from '@openrouter/sdk'
-import type { AiChatPayload } from '@progma/core'
+import type { AiChatPayload } from '@protozoan/core'
 import type { FileIndex } from './file-index.js'
 
 const DEFAULT_MODEL = 'openai/gpt-oss-120b:free'
 
-const SYSTEM_PROMPT = `You are Progma, an AI assistant embedded in a developer's browser.
+const SYSTEM_PROMPT = `You are Protozoan, an AI assistant embedded in a developer's browser.
 The developer is looking at a live web app and asking you to make code changes.
 You will be given the contents of relevant source files.
 
@@ -46,7 +46,7 @@ export async function runAiChat(
   }
 
   const client = new OpenRouter({ apiKey })
-  const model = process.env.PROGMA_MODEL ?? DEFAULT_MODEL
+  const model = process.env.PROTOZOAN_MODEL ?? DEFAULT_MODEL
 
   const files = fileIndex.getRelative().slice(0, 30)
   const fileContents = files
@@ -93,7 +93,7 @@ Developer request: ${payload.message}`
   const reply = raw.replace(DIFF_RE_STRIP, '').trim()
 
   if (diff) {
-    console.log('[Progma] Raw diff from model:\n', diff)
+    console.log('[Protozoan] Raw diff from model:\n', diff)
   }
 
   return { reply, diff }

@@ -1,15 +1,15 @@
-import type { ProgmaMessage } from '@progma/core'
+import type { ProtozoanMessage } from '@protozoan/core'
 
-type MessageHandler = (msg: ProgmaMessage) => void
+type MessageHandler = (msg: ProtozoanMessage) => void
 
-export class ProgmaSocket {
+export class ProtozoanSocket {
   private ws: WebSocket | null = null
   private handlers: MessageHandler[] = []
   private queue: string[] = []
 
   connect() {
     const proto = location.protocol === 'https:' ? 'wss' : 'ws'
-    this.ws = new WebSocket(`${proto}://${location.host}/__progma/ws`)
+    this.ws = new WebSocket(`${proto}://${location.host}/__protozoan/ws`)
 
     this.ws.addEventListener('open', () => {
       this.queue.forEach((msg) => this.ws!.send(msg))
@@ -18,7 +18,7 @@ export class ProgmaSocket {
 
     this.ws.addEventListener('message', (e) => {
       try {
-        const msg: ProgmaMessage = JSON.parse(e.data)
+        const msg: ProtozoanMessage = JSON.parse(e.data)
         this.handlers.forEach((h) => h(msg))
       } catch {}
     })
@@ -32,7 +32,7 @@ export class ProgmaSocket {
     })
   }
 
-  send(msg: ProgmaMessage) {
+  send(msg: ProtozoanMessage) {
     const data = JSON.stringify(msg)
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(data)

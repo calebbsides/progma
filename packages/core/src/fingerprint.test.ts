@@ -22,19 +22,19 @@ describe('hashString', () => {
 describe('fingerprintsMatch', () => {
   const base = { tag: 'h1', domPathHash: 'abc123', textSnippet: 'Hello' }
 
-  it('matches by dataProgmaId when both have it', () => {
-    const a = { ...base, dataProgmaId: 'id-1' }
-    const b = { ...base, domPathHash: 'different', dataProgmaId: 'id-1' }
+  it('matches by dataProtozoanId when both have it', () => {
+    const a = { ...base, dataProtozoanId: 'id-1' }
+    const b = { ...base, domPathHash: 'different', dataProtozoanId: 'id-1' }
     expect(fingerprintsMatch(a, b)).toBe(true)
   })
 
-  it('does not match when dataProgmaIds differ', () => {
-    const a = { ...base, dataProgmaId: 'id-1' }
-    const b = { ...base, dataProgmaId: 'id-2' }
+  it('does not match when dataProtozoanIds differ', () => {
+    const a = { ...base, dataProtozoanId: 'id-1' }
+    const b = { ...base, dataProtozoanId: 'id-2' }
     expect(fingerprintsMatch(a, b)).toBe(false)
   })
 
-  it('falls back to domPathHash + tag when no dataProgmaId', () => {
+  it('falls back to domPathHash + tag when no dataProtozoanId', () => {
     expect(fingerprintsMatch(base, { ...base })).toBe(true)
   })
 
@@ -46,20 +46,20 @@ describe('fingerprintsMatch', () => {
     expect(fingerprintsMatch(base, { ...base, tag: 'h2' })).toBe(false)
   })
 
-  it('uses dataProgmaId even if domPathHash differs', () => {
-    const a = { ...base, domPathHash: 'aaa', dataProgmaId: 'same' }
-    const b = { ...base, domPathHash: 'bbb', dataProgmaId: 'same' }
+  it('uses dataProtozoanId even if domPathHash differs', () => {
+    const a = { ...base, domPathHash: 'aaa', dataProtozoanId: 'same' }
+    const b = { ...base, domPathHash: 'bbb', dataProtozoanId: 'same' }
     expect(fingerprintsMatch(a, b)).toBe(true)
   })
 
-  it('falls back to hash+tag match when only one side has dataProgmaId', () => {
-    const a = { ...base, dataProgmaId: 'id-1' }
-    const b = { ...base } // no dataProgmaId — falls back to hash+tag, which match
+  it('falls back to hash+tag match when only one side has dataProtozoanId', () => {
+    const a = { ...base, dataProtozoanId: 'id-1' }
+    const b = { ...base } // no dataProtozoanId — falls back to hash+tag, which match
     expect(fingerprintsMatch(a, b)).toBe(true)
   })
 
-  it('does not match when only one side has dataProgmaId and hashes differ', () => {
-    const a = { ...base, domPathHash: 'aaa', dataProgmaId: 'id-1' }
+  it('does not match when only one side has dataProtozoanId and hashes differ', () => {
+    const a = { ...base, domPathHash: 'aaa', dataProtozoanId: 'id-1' }
     const b = { ...base, domPathHash: 'bbb' }
     expect(fingerprintsMatch(a, b)).toBe(false)
   })

@@ -1,5 +1,5 @@
 {
-  "name": "@progma/client",
+  "name": "@protozoan/client",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@progma/core": "workspace:*"
+    "@protozoan/core": "workspace:*"
   },
   "devDependencies": {
     "rimraf": "^5.0.0",

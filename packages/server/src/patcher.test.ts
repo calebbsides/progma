@@ -19,7 +19,7 @@ let tmpDir: string
 let fileIndex: FileIndex
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'progma-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'protozoan-test-'))
   fs.writeFileSync(path.join(tmpDir, 'App.tsx'), ORIGINAL)
   fileIndex = new FileIndex(tmpDir)
 })

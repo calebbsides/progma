@@ -5,7 +5,7 @@ export default defineConfig({
   outDir: 'dist',
   outExtension: () => ({ js: '.js' }),
   format: ['iife'],
-  globalName: '__progma',
+  globalName: '__protozoan',
   platform: 'browser',
   target: 'es2022',
   bundle: true,

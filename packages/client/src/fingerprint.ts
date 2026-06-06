@@ -1,5 +1,5 @@
-import { hashString } from '@progma/core'
-import type { ElementFingerprint } from '@progma/core'
+import { hashString } from '@protozoan/core'
+import type { ElementFingerprint } from '@protozoan/core'
 
 function buildDomPath(el: Element): string {
   const parts: string[] = []
@@ -37,6 +37,6 @@ export function fingerprintElement(el: Element): ElementFingerprint {
       width: Math.round(rect.width),
       height: Math.round(rect.height),
     },
-    dataProgmaId: (el as HTMLElement).dataset?.progmaId,
+    dataProtozoanId: (el as HTMLElement).dataset?.protozoanId,
   }
 }

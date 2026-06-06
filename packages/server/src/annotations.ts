@@ -1,15 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
-import type { Annotation, AnnotationSavePayload } from '@progma/core'
-import { fingerprintsMatch } from '@progma/core'
+import type { Annotation, AnnotationSavePayload } from '@protozoan/core'
+import { fingerprintsMatch } from '@protozoan/core'
 
 export class AnnotationStore {
   private filePath: string
   private annotations: Annotation[] = []
 
   constructor(projectRoot: string) {
-    const dir = path.join(projectRoot, '.progma')
+    const dir = path.join(projectRoot, '.protozoan')
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
     this.filePath = path.join(dir, 'annotations.json')
     this.load()

@@ -10,6 +10,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- **Rename** — App, package names, CSS IDs/classes, CLI binary, env vars, and type names fully renamed from `progma`/`Progma` to `protozoan`/`Protozoan`
+  - npm packages: `@progma/*` → `@protozoan/*`, CLI binary `progma` → `protozoan`
+  - CSS selectors: `#progma-*` / `.progma-*` → `#protozoan-*` / `.protozoan-*`
+  - URL paths: `/__progma/*` → `/__protozoan/*`
+  - Env vars: `PROGMA_PORT` → `PROTOZOAN_PORT`, `PROGMA_MODEL` → `PROTOZOAN_MODEL`
+  - Storage dir: `.progma/` → `.protozoan/`
+  - TypeScript types: `ProgmaMessage`, `ProgmaServer`, `ProgmaSocket`, `dataProgmaId` → `Protozoan*`
+
+
+
 - **UX** — FAB now opens a full-screen opaque overlay (modal-style) instead of a small side panel
 - **UX** — Element inspection is always active when the overlay is open; hovering any page element highlights it with an indigo outline (Chrome DevTools inspect style)
 - **UX** — Clicking an element selects it; a selector badge (`tag#id.class`) appears in the inspect bar showing the active target

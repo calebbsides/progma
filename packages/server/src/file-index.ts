@@ -15,7 +15,7 @@ export class FileIndex {
     this.projectRoot = projectRoot
     this.loadIgnore()
     this.ready = this.index().catch((err) => {
-      console.error('[Progma] FileIndex scan failed:', err)
+      console.error('[Protozoan] FileIndex scan failed:', err)
     })
     this.watch()
   }
@@ -25,13 +25,13 @@ export class FileIndex {
     if (fs.existsSync(gitignorePath)) {
       this.ig.add(fs.readFileSync(gitignorePath, 'utf8'))
     }
-    this.ig.add(['node_modules', 'dist', '.progma', '.git'])
+    this.ig.add(['node_modules', 'dist', '.protozoan', '.git'])
   }
 
   private async index() {
     const entries = await fg('**/*.{ts,tsx,js,jsx,css,html,vue,svelte}', {
       cwd: this.projectRoot,
-      ignore: ['node_modules/**', 'dist/**', '.progma/**', '.git/**'],
+      ignore: ['node_modules/**', 'dist/**', '.protozoan/**', '.git/**'],
       absolute: true,
     })
     this.files = new Set(entries)
@@ -39,7 +39,7 @@ export class FileIndex {
 
   private watch() {
     this.watcher = chokidar.watch(this.projectRoot, {
-      ignored: [/node_modules/, /dist/, /\.progma/, /\.git/],
+      ignored: [/node_modules/, /dist/, /\.protozoan/, /\.git/],
       ignoreInitial: true,
       persistent: false,
     })

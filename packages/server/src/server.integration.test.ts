@@ -4,7 +4,7 @@ import path from 'node:path'
 import os from 'node:os'
 import net from 'node:net'
 import { WebSocket } from 'ws'
-import type { ProgmaMessage } from '@progma/core'
+import type { ProtozoanMessage } from '@protozoan/core'
 
 // Mock the AI module before importing the server
 vi.mock('./ai.js', () => ({
@@ -19,7 +19,7 @@ vi.mock('./ai.js', () => ({
   }),
 }))
 
-import { ProgmaServer } from './server.js'
+import { ProtozoanServer } from './server.js'
 
 const FINGERPRINT = {
   tag: 'h1',
@@ -38,7 +38,7 @@ async function getFreePort(): Promise<number> {
   })
 }
 
-function waitForMessage(ws: WebSocket): Promise<ProgmaMessage> {
+function waitForMessage(ws: WebSocket): Promise<ProtozoanMessage> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('WebSocket message timeout')), 5000)
     ws.once('message', (data) => {
@@ -48,17 +48,17 @@ function waitForMessage(ws: WebSocket): Promise<ProgmaMessage> {
   })
 }
 
-function send(ws: WebSocket, msg: ProgmaMessage) {
+function send(ws: WebSocket, msg: ProtozoanMessage) {
   ws.send(JSON.stringify(msg))
 }
 
 let tmpDir: string
-let server: ProgmaServer
+let server: ProtozoanServer
 let port: number
 let ws: WebSocket
 
 beforeEach(async () => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'progma-int-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'protozoan-int-test-'))
 
   // Write a source file the patcher can target
   fs.writeFileSync(
@@ -69,7 +69,7 @@ beforeEach(async () => {
   port = await getFreePort()
   const targetPort = await getFreePort()
 
-  server = new ProgmaServer({
+  server = new ProtozoanServer({
     port,
     targetPort,
     projectRoot: tmpDir,
@@ -78,7 +78,7 @@ beforeEach(async () => {
 
   // Connect WebSocket client
   await new Promise<void>((resolve, reject) => {
-    ws = new WebSocket(`ws://localhost:${port}/__progma/ws`)
+    ws = new WebSocket(`ws://localhost:${port}/__protozoan/ws`)
     ws.once('open', resolve)
     ws.once('error', reject)
   })
@@ -91,7 +91,7 @@ afterEach(async () => {
   vi.clearAllMocks()
 })
 
-describe('ProgmaServer WebSocket', () => {
+describe('ProtozoanServer WebSocket', () => {
   it('responds to annotation:list with empty array initially', async () => {
     send(ws, { type: 'annotation:list', payload: {} })
     const msg = await waitForMessage(ws)

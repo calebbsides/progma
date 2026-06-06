@@ -20,18 +20,18 @@ async function waitForPort(port: number, retries = 30, delay = 500): Promise<voi
   throw new Error(`Port ${port} never became available`)
 }
 
-type ProgmaFixtures = {
-  progmaUrl: string
+type ProtozoanFixtures = {
+  protozoanUrl: string
 }
 
-export const test = base.extend<ProgmaFixtures>({
-  progmaUrl: [async ({}, use) => {
+export const test = base.extend<ProtozoanFixtures>({
+  protozoanUrl: [async ({}, use) => {
     const child: ChildProcess = spawn('node', [CLI, 'dev', '--', 'vite'], {
       cwd: EXAMPLE,
       env: {
         ...process.env,
         PORT: '14399',
-        PROGMA_PORT: '13999',
+        PROTOZOAN_PORT: '13999',
       },
       shell: true,
       stdio: 'pipe',
@@ -43,7 +43,7 @@ export const test = base.extend<ProgmaFixtures>({
       await waitForPort(13999)
     } catch {
       child.kill()
-      throw new Error('Progma proxy did not start in time')
+      throw new Error('Protozoan proxy did not start in time')
     }
 
     await use('http://localhost:13999')

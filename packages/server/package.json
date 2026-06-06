@@ -1,5 +1,5 @@
 {
-  "name": "@progma/server",
+  "name": "@protozoan/server",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@openrouter/sdk": "^0.12.79",
-    "@progma/core": "workspace:*",
+    "@protozoan/core": "workspace:*",
     "chokidar": "^3.6.0",
     "diff": "^7.0.0",
     "fast-glob": "^3.3.0",

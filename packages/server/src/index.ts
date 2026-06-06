@@ -1,2 +1,2 @@
-export { ProgmaServer } from './server.js'
-export type { ProgmaServerOptions } from './server.js'
+export { ProtozoanServer } from './server.js'
+export type { ProtozoanServerOptions } from './server.js'

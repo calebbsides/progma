@@ -15,7 +15,7 @@ let tmpDir: string
 let store: AnnotationStore
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'progma-ann-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'protozoan-ann-test-'))
   store = new AnnotationStore(tmpDir)
 })
 
@@ -56,13 +56,13 @@ describe('AnnotationStore', () => {
     expect(store.resolve('no-such-id')).toBe(false)
   })
 
-  it('creates the .progma directory if it does not exist', () => {
-    const dir = path.join(tmpDir, '.progma')
+  it('creates the .protozoan directory if it does not exist', () => {
+    const dir = path.join(tmpDir, '.protozoan')
     expect(fs.existsSync(dir)).toBe(true)
   })
 
   it('handles a corrupt annotations.json gracefully', () => {
-    const dir = path.join(tmpDir, '.progma')
+    const dir = path.join(tmpDir, '.protozoan')
     fs.writeFileSync(path.join(dir, 'annotations.json'), 'not json')
     const store2 = new AnnotationStore(tmpDir)
     expect(store2.getAll()).toEqual([])

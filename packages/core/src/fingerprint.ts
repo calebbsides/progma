@@ -9,11 +9,11 @@ export function hashString(str: string): string {
 }
 
 export function fingerprintsMatch(
-  a: { domPathHash: string; tag: string; dataProgmaId?: string },
-  b: { domPathHash: string; tag: string; dataProgmaId?: string },
+  a: { domPathHash: string; tag: string; dataProtozoanId?: string },
+  b: { domPathHash: string; tag: string; dataProtozoanId?: string },
 ): boolean {
-  if (a.dataProgmaId && b.dataProgmaId) {
-    return a.dataProgmaId === b.dataProgmaId
+  if (a.dataProtozoanId && b.dataProtozoanId) {
+    return a.dataProtozoanId === b.dataProtozoanId
   }
   return a.domPathHash === b.domPathHash && a.tag === b.tag
 }

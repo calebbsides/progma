@@ -1,15 +1,15 @@
 import http from 'node:http'
 import httpProxy from 'http-proxy'
 import { WebSocketServer, WebSocket } from 'ws'
-import type { ProgmaMessage, AnnotationSavePayload, AiChatPayload } from '@progma/core'
+import type { ProtozoanMessage, AnnotationSavePayload, AiChatPayload } from '@protozoan/core'
 import { AnnotationStore } from './annotations.js'
 import { FileIndex } from './file-index.js'
 import { runAiChat } from './ai.js'
 import { applyDiff } from './patcher.js'
 
-const INJECT_SNIPPET = `<script src="/__progma/client.js"></script>`
+const INJECT_SNIPPET = `<script src="/__protozoan/client.js"></script>`
 
-export interface ProgmaServerOptions {
+export interface ProtozoanServerOptions {
   port: number
   targetPort: number
   projectRoot: string
@@ -17,7 +17,7 @@ export interface ProgmaServerOptions {
   onReady?: (port: number) => void
 }
 
-export class ProgmaServer {
+export class ProtozoanServer {
   private proxy: httpProxy
   private httpServer: http.Server
   private wss: WebSocketServer
@@ -26,8 +26,8 @@ export class ProgmaServer {
   private clients: Set<WebSocket> = new Set()
   private clientScript: string
 
-  constructor(private opts: ProgmaServerOptions) {
-    this.clientScript = opts.clientScript ?? `console.warn('[Progma] client bundle not available')`
+  constructor(private opts: ProtozoanServerOptions) {
+    this.clientScript = opts.clientScript ?? `console.warn('[Protozoan] client bundle not available')`
     this.annotations = new AnnotationStore(opts.projectRoot)
     this.fileIndex = new FileIndex(opts.projectRoot)
     this.proxy = httpProxy.createProxyServer({ ws: true })
@@ -51,12 +51,12 @@ export class ProgmaServer {
       this.clients.add(ws)
       ws.on('close', () => this.clients.delete(ws))
       ws.on('message', (data) => this.handleWsMessage(ws, data.toString()).catch((err) => {
-        console.error('[Progma] WS handler error:', err)
+        console.error('[Protozoan] WS handler error:', err)
       }))
     })
 
     this.httpServer.on('upgrade', (req, socket, head) => {
-      if (req.url?.startsWith('/__progma/ws')) {
+      if (req.url?.startsWith('/__protozoan/ws')) {
         this.wss.handleUpgrade(req, socket, head, (ws) => {
           this.wss.emit('connection', ws, req)
         })
@@ -72,13 +72,13 @@ export class ProgmaServer {
   private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
     const url = req.url ?? '/'
 
-    if (url === '/__progma/client.js') {
+    if (url === '/__protozoan/client.js') {
       res.writeHead(200, { 'Content-Type': 'application/javascript' })
       res.end(this.clientScript)
       return
     }
 
-    if (url.startsWith('/__progma/')) {
+    if (url.startsWith('/__protozoan/')) {
       res.writeHead(404)
       res.end('Not found')
       return
@@ -155,7 +155,7 @@ export class ProgmaServer {
   }
 
   private async handleWsMessage(ws: WebSocket, raw: string) {
-    let msg: ProgmaMessage
+    let msg: ProtozoanMessage
     try {
       msg = JSON.parse(raw)
     } catch {
@@ -191,7 +191,7 @@ export class ProgmaServer {
             const result = applyDiff(diff, this.fileIndex)
             applied = result.success
             if (!result.success) {
-              console.error('[Progma] Patch error:', result.error)
+              console.error('[Protozoan] Patch error:', result.error)
             }
           }
           this.send(ws, { type: 'ai:chat:response', payload: { reply, diff, applied } })
@@ -206,13 +206,13 @@ export class ProgmaServer {
     }
   }
 
-  private send(ws: WebSocket, msg: ProgmaMessage) {
+  private send(ws: WebSocket, msg: ProtozoanMessage) {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(msg))
     }
   }
 
-  private broadcast(msg: ProgmaMessage) {
+  private broadcast(msg: ProtozoanMessage) {
     const data = JSON.stringify(msg)
     for (const client of this.clients) {
       if (client.readyState === WebSocket.OPEN) {
@@ -224,7 +224,7 @@ export class ProgmaServer {
   listen() {
     this.httpServer.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code === 'EADDRINUSE') {
-        console.error(`[Progma] Port ${this.opts.port} is already in use. Try a different port with PROGMA_PORT.`)
+        console.error(`[Protozoan] Port ${this.opts.port} is already in use. Try a different port with PROTOZOAN_PORT.`)
         process.exit(1)
       }
       throw err

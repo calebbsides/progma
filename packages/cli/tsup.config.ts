@@ -16,7 +16,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   dts: false,
-  noExternal: [/@progma\/.*/],
+  noExternal: [/@protozoan\/.*/],
   banner: {
     js: '#!/usr/bin/env node',
   },

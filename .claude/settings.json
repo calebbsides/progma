@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pnpm --filter @progma/server build)",
+      "Bash(pnpm --filter @protozoan/server build)",
       "Bash(git commit -m ' *)"
     ]
   }
