@@ -30,13 +30,13 @@ Your source files are the source of truth. Progma never touches your build confi
 Progma can be used without installing globally via `npx`:
 
 ```bash
-npx progma dev
+npx @calebbsides/progma dev
 ```
 
 Or install globally:
 
 ```bash
-npm install -g progma
+npm install -g @calebbsides/progma
 ```
 
 ---
