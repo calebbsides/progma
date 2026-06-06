@@ -75,10 +75,10 @@ importers:
 
   packages/cli:
     devDependencies:
-      '@progma/client':
+      '@protozoan/client':
         specifier: workspace:*
         version: link:../client
-      '@progma/server':
+      '@protozoan/server':
         specifier: workspace:*
         version: link:../server
       dotenv:
@@ -96,7 +96,7 @@ importers:
 
   packages/client:
     dependencies:
-      '@progma/core':
+      '@protozoan/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -127,7 +127,7 @@ importers:
       '@openrouter/sdk':
         specifier: ^0.12.79
         version: 0.12.79
-      '@progma/core':
+      '@protozoan/core':
         specifier: workspace:*
         version: link:../core
       chokidar:
