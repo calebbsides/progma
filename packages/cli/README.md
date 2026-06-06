@@ -1,17 +1,17 @@
-# @calebbsides/progma
+# protozoan
 
 AI-powered dev overlay — wrap any dev server with a chat panel and element annotation tools.
 
 ## Install
 
 ```bash
-npm install -g @calebbsides/progma
+npm install -g protozoan
 ```
 
 Or run without installing:
 
 ```bash
-npx @calebbsides/progma dev -- vite
+npx protozoan dev -- vite
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ progma dev -- webpack serve
 progma dev -- npm run dev
 ```
 
-Progma starts on port `3000` by default and proxies your dev server transparently. Open `http://localhost:3000` — your app loads normally with a Progma toolbar injected in the corner.
+Protozoan starts on port `3000` by default and proxies your dev server transparently. Open `http://localhost:3000` — your app loads normally with a Progma toolbar injected in the corner.
 
 ## Setup
 

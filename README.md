@@ -30,13 +30,13 @@ Your source files are the source of truth. Progma never touches your build confi
 Progma can be used without installing globally via `npx`:
 
 ```bash
-npx @calebbsides/progma dev
+npx protozoan dev
 ```
 
 Or install globally:
 
 ```bash
-npm install -g @calebbsides/progma
+npm install -g protozoan
 ```
 
 ---

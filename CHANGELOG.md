@@ -8,6 +8,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.1] — 2026-06-05 (protozoan)
+
+### Changed
+
+- **Packaging** — renamed npm package from `@calebbsides/progma` to `protozoan` (unscoped) to resolve publish issues; version reset to `0.0.1`
+
 ## [0.0.3] — 2026-06-05
 
 ### Changed
