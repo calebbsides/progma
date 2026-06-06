@@ -28,6 +28,6 @@ jobs:
 
       - name: Publish
         working-directory: packages/cli
-        run: pnpm publish --access public --provenance
+        run: npm publish --access public --provenance
         env:
           NPM_CONFIG_PROVENANCE: true
