@@ -21,7 +21,7 @@ Your source files are the source of truth. Progma never touches your build confi
 
 - Node.js 18 or later
 - An existing front-end project with a dev server (Vite, Next.js, Webpack, CRA — anything)
-- An [Anthropic API key](https://console.anthropic.com/)
+- An [OpenRouter API key](https://openrouter.ai) (free tier available)
 
 ---
 
@@ -45,13 +45,13 @@ npm install -g @calebbsides/progma
 
 ### 1. Set your API key
 
-Progma uses the Anthropic API for AI code generation. Set your key as an environment variable:
+Progma uses [OpenRouter](https://openrouter.ai) for AI code generation. A free tier is available — no credit card required.
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+export OPENROUTER_API_KEY=sk-or-...
 ```
 
-To persist this across sessions, add it to your shell profile (`.bashrc`, `.zshrc`, etc.).
+To persist this across sessions, add it to your shell profile (`.bashrc`, `.zshrc`, etc.) or a `.env` file in your project root.
 
 ### 2. Navigate to your project
 
@@ -119,24 +119,15 @@ To generate a code change from an annotation, open a pin and click **"Fix with A
 
 ## Configuration
 
-Create a `progma.config.ts` (or `.js`) file in your project root to customize behavior:
+Progma is configured via environment variables — set them in your shell or a `.env` file in your project root:
 
-```ts
-import { defineConfig } from 'progma'
+```bash
+# Required
+OPENROUTER_API_KEY=sk-or-...
 
-export default defineConfig({
-  // Port for the Progma proxy (default: 3000)
-  port: 3000,
-
-  // AI model to use (default: 'claude-sonnet-4-5')
-  model: 'claude-sonnet-4-5',
-
-  // Paths to exclude from AI file context (supports .gitignore globs)
-  ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.*'],
-
-  // Where to store annotations (default: '.progma/annotations.json')
-  annotationsPath: '.progma/annotations.json',
-})
+# Optional
+PROGMA_PORT=3000                          # proxy port (default: 3000)
+PROGMA_MODEL=openai/gpt-4o               # any OpenRouter model (default: openai/gpt-oss-120b:free)
 ```
 
 ---
@@ -184,7 +175,7 @@ npx progma dev -- <your-dev-command>
 
 **AI changes aren't applying**
 
-- Check that `ANTHROPIC_API_KEY` is set in your environment.
+- Check that `OPENROUTER_API_KEY` is set in your environment.
 - Make sure your source files are not inside `node_modules` or another ignored path.
 - Check that the file Progma is targeting is writable.
 
@@ -204,9 +195,9 @@ No. Progma is a proxy — it sits in front of your existing dev server and doesn
 
 No. Progma injects its client script at runtime. There's nothing to add to your `package.json` or import into your code.
 
-**Is my code sent to Anthropic?**
+**Is my code sent to an AI provider?**
 
-The relevant source files for the current page are sent to the Anthropic API when you use the AI chat. No code is sent unless you actively submit a prompt. See [Anthropic's privacy policy](https://www.anthropic.com/privacy) for details on data handling.
+The relevant source files for the current page are sent to OpenRouter when you use the AI chat. No code is sent unless you actively submit a prompt. See [OpenRouter's privacy policy](https://openrouter.ai/privacy) for details on data handling.
 
 **Does it work with TypeScript projects?**
 
